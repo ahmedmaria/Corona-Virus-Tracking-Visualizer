@@ -205,11 +205,14 @@ function populateLocations() {
 async function initializeApp() {
   console.log("initialize the App");
   setReferences();
-  await performAsyncCall();
-  console.log("world detail", coronaData.latest);
-  console.log(`world location:${coronaData.location}`);
-  doEventBindings();
+  NProgress.start();
   populateLocations();
+  await performAsyncCall();
+
+  //console.log("world detail", coronaData.latest);
+  //console.log(`world location:${coronaData.location}`);
+  doEventBindings();
+  NProgress.done();
 }
 async function performAsyncCall() {
   const response = await fetch(`${baseUrlEndpoint}`);
