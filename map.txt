@@ -1,4 +1,8 @@
- mapboxgl.accessToken = '<pk.eyJ1IjoibWFyaWFhaG1lZCIsImEiOiJja2E0NXkzdmUwMjd2M2trZnhmcDUxcmhyIn0.3LisUNYRXJ2OJddYB538Yg>';
+ // TO MAKE THE MAP APPEAR YOU MUST
+	// ADD YOUR ACCESS TOKEN FROM
+	// https://account.mapbox.com
+ 
+ mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaWFhaG1lZCIsImEiOiJja2E0NXkzdmUwMjd2M2trZnhmcDUxcmhyIn0.3LisUNYRXJ2OJddYB538Yg';
   const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/dark-v10',

@@ -203,12 +203,27 @@ function populateLocations() {
   );
 }
 
-	// TO MAKE THE MAP APPEAR YOU MUST
-	// ADD YOUR ACCESS TOKEN FROM
-	// https://account.mapbox.com
-//mapboxgl.accessToken = '<pk.eyJ1IjoibWFyaWFhaG1lZCIsImEiOiJja2E0NXkzdmUwMjd2M2trZnhmcDUxcmhyIn0.3LisUNYRXJ2OJddYB538Yg>';
+	
+let geoCoder;
+async function geocodeReverseFromLatLngToPlace(lat,lng) {
+  return new Promise((resolve,reject)=>{
+    geoCoder.mapboxClient.geocodeReverse(
+      {
+        latitude : parseFloat(lat),
+        longitude : parseFloat(lng)
+      },
 
+      function(error, response){
+      if(error){
+        reject (error);
+      }
+      resolve(response.features[0] && response.features[0].place_name)
 
+      }
+    )
+ 
+  })
+}
 
 
 
@@ -221,7 +236,16 @@ function renderMap(){
   zoom: 3
   });
    
-  map.on('load', function() {
+geoCoder = new MapboxGeocoder({
+
+  accessToken : mapboxgl.accessToken
+
+});
+map.addControl(geoCoder);
+//zoom and rotational control for the Map
+map.addControl(new mapboxgl.NavigationControl());
+
+  map.on('load', async function() {
   // Add a new source from our GeoJSON data and
   // set the 'cluster' option to true. GL-JS will
   // add the point_count property to your source data.
@@ -236,15 +260,21 @@ function renderMap(){
       name: "urn:ogc:def:crs:OGC:1.3:CRS84"
       }
       },
-    features : coronaData.locations.map(location => {
+    features : await Promise.all(coronaData.locations.map(async location => {
       //reverse geocoding
+      const placeName = await geocodeReverseFromLatLngToPlace(
+        location.coordinates.latitude,
+        location.coordinates.longitude
+      )
+      console.log(placeName);
+
       return {
         type : 'Feature',
         properties : {
           description : 
           `<table>
           <thead>
-          <tr> Place Name </tr>
+          <tr> ${placeName} </tr>
           </thead>
           <tbody>
           <tr> <td> Confirmed Cases </td> 
@@ -267,15 +297,15 @@ function renderMap(){
         geometry: {
         type : "Point",
         coordinates : [
+        `${location.coordinates.longitude }`, // latitude and longitude sequence from mapbox.
         `${location.coordinates.latitude}`,
-        `${location.coordinates.longitude}`,
         ]
 
         }
 
       }
 
-    })
+    }))
 
 
   } ,
